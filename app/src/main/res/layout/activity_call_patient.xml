@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context=".ui.CallPatientActivity">
+
+    <FrameLayout
+        android:id="@+id/dummyBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@android:color/holo_red_dark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="BÀN PHÁT THUỐC"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/dummyBg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tableNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="1"
+        android:textColor="@android:color/white"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/dummyBg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtView1" />
+
+    <TextView
+        android:id="@+id/priorityPatientTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="BỆNH NHÂN ƯU TIÊN"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/dummyBg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tableNumber" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/simple_border_editext"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="XÁC NHẬN"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/btnLogOut"
+        app:layout_constraintEnd_toEndOf="@id/dummyBg"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnLogOut"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/simple_border_editext"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="ĐĂNG XUẤT"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/dummyBg"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/listHeader"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="BỆNH NHÂN PHÁT THUỐC"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/guideline61"
+        app:layout_constraintStart_toEndOf="@id/guideline25"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/patientRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline61"
+        app:layout_constraintStart_toEndOf="@id/guideline25"
+        app:layout_constraintTop_toBottomOf="@id/listHeader"
+        tools:listitem="@layout/patient_item" />
+
+    <FrameLayout
+        android:id="@+id/dummyBg2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/guideline5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline61"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ĐÃ GỌI ĐẾN SỐ THỨ TỰ"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/dummyBg2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10"
+        android:textColor="@android:color/black"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/dummyBg2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/dummyBg2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtPatientName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:text="MINH ANH THUE"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/dummyBg2"
+        app:layout_constraintTop_toBottomOf="@+id/txtNumber" />
+
+    <TextView
+        android:id="@+id/txtPatientDes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nam/20 tuoi"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/txtPatientName"
+        app:layout_constraintStart_toStartOf="@id/txtPatientName" />
+
+    <TextView
+        android:id="@+id/patientPhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="20dp"
+        android:text="01563215.02215651"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/txtPatientName"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteX="848dp" />
+
+
+    <Button
+        android:id="@+id/btnNextPatient"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="5dp"
+        android:text="GỌI BỆNH NHÂN TIẾP THEO"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_red_dark"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/guideline61" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:id="@+id/dummyBg3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:background="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toTopOf="@id/btnNextPatient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline61"
+        app:layout_constraintTop_toBottomOf="@id/guideline5" >
+        <TextView
+            android:id="@+id/txtview3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="XÁC NHẬN TOA THUỐC"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:background="@drawable/simple_border_editext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:focusedByDefault="true"
+            android:gravity="center"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text=""
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.23" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline61"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.64" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

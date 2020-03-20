@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="logo">Logo</string>
+    <string name="he_thong_tekmedi_btc">HE THONG TEKMEDI.BTC</string>
+    <string name="ip_thiet_bi">IP THIẾT BỊ</string>
+    <string name="benh_nhan">Bệnh nhân</string>
+    <string name="he_thong_tekmedi">HỆ THỐNG TEKMEDI.BTC</string>
+    <string name="ban_phat_thuoc">BÀN PHÁT THUỐC</string>
+    <string name="uu_tien">ƯU TIÊN</string>
+    <string name="connection_error">Không thể lấy địa chỉ ip, vui lòng kiểm tra lại kết nối</string>
+    <string name="bat_dau">Bắt đầu</string>
+
+    <string-array name="pillTable">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+</resources>

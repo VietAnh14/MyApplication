@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:background="@android:color/white"
+    android:padding="10dp">
+
+    <TextView
+        app:layout_constraintVertical_chainStyle="packed"
+        android:id="@+id/patientName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MINH ANH THUE"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/txtPatientDes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        app:layout_constraintVertical_chainStyle="packed"
+        android:id="@+id/txtPatientDes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/patientName"
+        android:text="Nam/20 tuoi"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/patientName" />
+
+    <TextView
+        android:id="@+id/patientPhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="01234678965"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@id/patientCountNumber"
+        android:text="So thu tu"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/patientCountNumber"
+        app:layout_constraintEnd_toStartOf="@id/patientCountNumber"
+        app:layout_constraintTop_toTopOf="@id/patientCountNumber" />
+
+    <TextView
+        android:id="@+id/patientCountNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/round_border"
+        android:padding="5dp"
+        android:text="10"
+        android:textColor="@android:color/black"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

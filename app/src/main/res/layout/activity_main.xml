@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:contentDescription="@string/logo"
+        android:src="@drawable/logo_tekmedi"
+        app:layout_constraintEnd_toStartOf="@+id/textView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/he_thong_tekmedi"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="@+id/logo" />
+
+    <TextView
+        android:id="@+id/txtDesIp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ip_thiet_bi"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/txtIp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBody" />
+
+    <TextView
+        android:id="@+id/txtIp"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="100dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/simple_border_editext"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="192.168.0.1"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/txtDesIp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="@+id/txtDesIp" />
+
+    <TextView
+        android:id="@+id/txtDesNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ban_phat_thuoc"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/txtDesIp"
+        app:layout_constraintTop_toTopOf="@+id/guidelineBody2" />
+
+    <TextView
+        android:id="@+id/textAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2019 © Cho Ray BTC System Development By Tekmedi JSC"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/numberSpinner" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bat_dau"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:ems="6"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textSize="25sp"
+        android:textAllCaps="false"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/textAuthor"
+        app:layout_constraintEnd_toEndOf="@+id/numberSpinner" />
+
+    <CheckBox
+        android:id="@+id/priorityCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:layout_marginEnd="20dp"
+        android:text="@string/uu_tien"
+        android:layout_marginBottom="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnStart"
+        app:layout_constraintEnd_toEndOf="@+id/btnStart"  />
+
+    <Spinner
+        android:id="@+id/numberSpinner"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="@drawable/simple_border_editext"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toBottomOf="@+id/txtDesNumber"
+        app:layout_constraintEnd_toEndOf="@+id/txtIp"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="@+id/txtDesNumber" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_down"
+        app:layout_constraintEnd_toEndOf="@id/numberSpinner"
+        app:layout_constraintTop_toTopOf="@id/numberSpinner"
+        app:layout_constraintBottom_toBottomOf="@id/numberSpinner" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineBody2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.56" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

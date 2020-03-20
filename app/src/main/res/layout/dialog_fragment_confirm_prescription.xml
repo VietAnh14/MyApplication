@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="XÁC NHẬN TOA THUỐC"
+        android:textStyle="bold"
+        android:background="@android:color/holo_red_dark"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <EditText
+        android:id="@+id/confirmPrescriptionEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/simple_border_editext"
+        android:padding="10dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialogTitle" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@android:color/white"
+        android:text="XÁC NHẬN"
+        android:background="@android:color/holo_red_dark"
+        app:layout_constraintTop_toBottomOf="@id/confirmPrescriptionEditText"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
