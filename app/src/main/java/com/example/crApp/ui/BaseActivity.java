@@ -1,6 +1,7 @@
 package com.example.crApp.ui;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,7 @@ public class BaseActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "handleError: " + error.getMessage(), error);
         }
+        Toast.makeText(this, "Ơ failed mất rồi???", Toast.LENGTH_SHORT).show();
     }
 
     public void showLoading(@Nullable String message) {

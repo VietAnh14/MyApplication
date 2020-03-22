@@ -10,12 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.crApp.R;
 import com.example.crApp.data.PatientAndQueue;
-import com.example.crApp.data.PatientDTO;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +36,26 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.PatientV
         notifyDataSetChanged();
     }
 
+    public void addPatient(PatientAndQueue patientAndQueue) {
+        listPatient.add(patientAndQueue);
+        notifyItemInserted(listPatient.size() - 1);
+    }
+
+    public void removePatient(String patientCode) {
+        // Linked list
+        int index = -1;
+        for (PatientAndQueue patient : listPatient) {
+            index++;
+            if (patient.getQueue().getPatientCode().equals(patientCode)) {
+                listPatient.remove(index);
+                break;
+            }
+        }
+        if (index >= 0) {
+            notifyItemRemoved(index);
+        }
+    }
+
     @NonNull
     @Override
     public PatientViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -49,7 +66,7 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.PatientV
     @Override
     public void onBindViewHolder(@NonNull PatientViewHolder holder, int position) {
         PatientAndQueue patientAndQueue = listPatient.get(position);
-        String name = patientAndQueue.getPatient().getFirstName() + " " + patientAndQueue.getPatient().getLastName();
+        String name = patientAndQueue.getPatient().getLastName() + " " + patientAndQueue.getPatient().getFirstName();
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
             Date birthday = format.parse(patientAndQueue.getPatient().getBirthday());

@@ -12,6 +12,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.crApp.R;
 
+import java.util.Objects;
+
 public class LoadingDialogFragment extends DialogFragment {
     private TextView messageText;
     private static final String MESSAGE_KEY = "message";
@@ -43,5 +45,11 @@ public class LoadingDialogFragment extends DialogFragment {
             String message = getArguments().getString(MESSAGE_KEY, "Lấy danh sách bệnh nhân");
             messageText.setText(message);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Objects.requireNonNull(getDialog()).setCanceledOnTouchOutside(false);
     }
 }
