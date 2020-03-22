@@ -1,28 +1,32 @@
 package com.example.crApp.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.crApp.MainActivity;
 import com.example.crApp.R;
+import com.example.crApp.data.ApiHelper;
 import com.example.crApp.data.PrefHelper;
 import com.example.crApp.ui.dialog.ConfirmPrescriptionDialogFragment;
 
-import java.util.ArrayList;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class CallPatientActivity extends BaseActivity {
     private RecyclerView patientRecyclerView;
     private Button btnLogout;
+    private Button buttonNextPatient;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private int tableNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,18 +36,31 @@ public class CallPatientActivity extends BaseActivity {
     }
 
     public void setUpRecyclerView() {
+        showLoading(null);
         patientRecyclerView = findViewById(R.id.patientRecyclerView);
         patientRecyclerView.setHasFixedSize(true);
         patientRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        PatientAdapter patientAdapter = new PatientAdapter();
+        patientRecyclerView.setAdapter(patientAdapter);
         // TODO: SET ADAPTER
-        ArrayList<String> names = new ArrayList<>();
-        names.add("VIET ANH");
-        names.add("VINH");
-        names.add("TUAN ANH");
-        names.add("VIET ANH");
-        names.add("VINH");
-        names.add("TUAN ANH");
-        patientRecyclerView.setAdapter(new PatientAdapter(names));
+        compositeDisposable.add(
+                ApiHelper.getListPatientByTable(tableNumber)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    Log.d(TAG, "setUpRecyclerView: code: " + result.getCode());
+                                    patientAdapter.setPatients(result.getResult());
+                                    // save some memory
+                                    compositeDisposable.clear();
+                                    loadingDialogFragment.dismiss();
+                                },
+                                err -> {
+                                    handleError(err);
+                                    loadingDialogFragment.dismiss();
+                                }
+                        )
+        );
     }
 
     public static Intent getIntent(Context context) {
@@ -52,8 +69,9 @@ public class CallPatientActivity extends BaseActivity {
 
     public void setupTableNumber() {
         PrefHelper prefHelper = PrefHelper.getInstance(getApplicationContext());
-        TextView tableNumber = findViewById(R.id.tableNumber);
-        tableNumber.setText(String.valueOf(prefHelper.getTableNumber()));
+        TextView tableNumberTv = findViewById(R.id.tableNumber);
+        tableNumber = prefHelper.getTableNumber();
+        tableNumberTv.setText(String.valueOf(tableNumber));
     }
 
     public void setUpConfirmBtn() {
@@ -83,4 +101,14 @@ public class CallPatientActivity extends BaseActivity {
         btnLogout.setOnClickListener(v -> finish());
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.dispose();
+        super.onDestroy();
+    }
+
+    // Single will auto dispose when on complete or on error is call, not calling doOnDispose
+    // doOnDispose only being called when the subscription is disposed before the action is finished
+    // Should clear composite disposable to save some memory
 }

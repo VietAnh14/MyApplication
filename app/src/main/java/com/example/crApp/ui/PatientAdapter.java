@@ -9,19 +9,32 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.crApp.R;
+import com.example.crApp.data.PatientAndQueue;
+import com.example.crApp.data.PatientDTO;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.PatientViewHolder> {
 
     // TODO: Change data type
-    private List<String> listPatient;
+    private List<PatientAndQueue> listPatient;
 
-    public PatientAdapter(List<String> listPatient) {
+    public PatientAdapter() {
+
+    }
+
+    public PatientAdapter(List<PatientAndQueue> listPatient) {
         this.listPatient = listPatient;
     }
 
-    public void setPatients(List<String> listPatient) {
+    public void setPatients(List<PatientAndQueue> listPatient) {
         this.listPatient = listPatient;
         notifyDataSetChanged();
     }
@@ -35,8 +48,24 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.PatientV
 
     @Override
     public void onBindViewHolder(@NonNull PatientViewHolder holder, int position) {
-        // TODO: implement bind data to view item
-        holder.patientName.setText(listPatient.get(position));
+        PatientAndQueue patientAndQueue = listPatient.get(position);
+        String name = patientAndQueue.getPatient().getFirstName() + " " + patientAndQueue.getPatient().getLastName();
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+            Date birthday = format.parse(patientAndQueue.getPatient().getBirthday());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(birthday != null ? birthday : cal.getTime());
+            int age = Calendar.getInstance().get(Calendar.YEAR) - cal.get(Calendar.YEAR);
+            String des = patientAndQueue.getPatient().getGender() == 1 ? "Nam" : "Nữ";
+            des +=  "/" + age + " tuổi";
+            holder.patientDes.setText(des);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        holder.patientCode.setText(patientAndQueue.getQueue().getPatientCode());
+        holder.patientName.setText(name);
+        String countNumber = patientAndQueue.getQueue().getNumber().toString();
+        holder.patientCountNumber.setText(countNumber);
     }
 
     @Override
@@ -47,13 +76,14 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.PatientV
     static class PatientViewHolder extends RecyclerView.ViewHolder {
         public TextView patientName;
         public TextView patientDes;
-        public TextView patientPhoneNumber;
+        public TextView patientCode;
         public TextView patientCountNumber;
+
         public PatientViewHolder(@NonNull View itemView) {
             super(itemView);
             patientName = itemView.findViewById(R.id.patientName);
             patientDes = itemView.findViewById(R.id.txtPatientDes);
-            patientPhoneNumber = itemView.findViewById(R.id.patientPhoneNumber);
+            patientCode = itemView.findViewById(R.id.patientCode);
             patientCountNumber = itemView.findViewById(R.id.patientCountNumber);
         }
     }

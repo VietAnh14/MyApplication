@@ -1,44 +1,43 @@
 package com.example.crApp.data;
 
+// 2:57 AM and this fucked me
+
 public class BaseResponse<T> {
-    private T data;
-    private Meta metadata;
+    private T result;
+    private Boolean success;
+    private Integer code;
 
-    public BaseResponse(T data, Meta metadata) {
-        this.data = data;
-        this.metadata = metadata;
+    public BaseResponse(T result, Boolean success, Integer code) {
+        this.result = result;
+        this.success = success;
+        this.code = code;
     }
 
-    public BaseResponse(T data) {
-        this.data = data;
+    public T getResult() {
+        return result;
     }
 
-    public T getData() {
-        return data;
+    public void setResult(T result) {
+        this.result = result;
     }
 
-    public Meta getMetadata() {
-        return metadata;
+    public Boolean getSuccess() {
+        return success;
     }
 
-    public static class Meta {
-        private String code;
-        private String message;
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+    public void setSuccess(Boolean success) {
+        this.success = success;
     }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public BaseResponse() {
+    }
+
 }

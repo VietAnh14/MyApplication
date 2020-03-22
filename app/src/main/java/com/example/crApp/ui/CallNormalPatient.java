@@ -44,15 +44,15 @@ public class CallNormalPatient extends AppCompatActivity {
         patientRecyclerView = findViewById(R.id.patientRecyclerView);
         patientRecyclerView.setHasFixedSize(true);
         patientRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ArrayList<String> names = new ArrayList<>();
-        names.add("VIET ANH");
-        names.add("VINH");
-        names.add("TUAN ANH");
-        names.add("VIET ANH");
-        names.add("VINH");
-        names.add("TUAN ANH");
-        // TODO: SET ADAPTER
-        patientRecyclerView.setAdapter(new PatientAdapter(names));
+//        ArrayList<String> names = new ArrayList<>();
+//        names.add("VIET ANH");
+//        names.add("VINH");
+//        names.add("TUAN ANH");
+//        names.add("VIET ANH");
+//        names.add("VINH");
+//        names.add("TUAN ANH");
+//        // TODO: SET ADAPTER
+//        patientRecyclerView.setAdapter(new PatientAdapter(names));
     }
 
     public void setupTableNumber() {
