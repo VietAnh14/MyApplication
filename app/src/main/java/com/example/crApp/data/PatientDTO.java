@@ -14,8 +14,9 @@ public class PatientDTO {
     private String birthday;
     @SerializedName("birthday_year_only")
     private Boolean birthdayYearOnly;
+    private String code;
 
-    public PatientDTO(String id, String tekmediUid, String lastName, String firstName, Integer gender, String birthday, Boolean birthdayYearOnly) {
+    public PatientDTO(String id, String tekmediUid, String lastName, String firstName, Integer gender, String birthday, Boolean birthdayYearOnly, String code) {
         this.id = id;
         this.tekmediUid = tekmediUid;
         this.lastName = lastName;
@@ -23,6 +24,7 @@ public class PatientDTO {
         this.gender = gender;
         this.birthday = birthday;
         this.birthdayYearOnly = birthdayYearOnly;
+        this.code = code;
     }
 
     public PatientDTO() {
@@ -82,5 +84,13 @@ public class PatientDTO {
 
     public void setBirthdayYearOnly(Boolean birthDayYearOnly) {
         this.birthdayYearOnly = birthDayYearOnly;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

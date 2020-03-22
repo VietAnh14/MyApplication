@@ -19,7 +19,7 @@ import com.example.crApp.ui.CallNormalPatient;
 import com.example.crApp.ui.CallPatientActivity;
 import com.example.crApp.utils.Utils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity{
     private Button btnStart;
     private CheckBox checkBoxPriority;
     private PrefHelper prefHelper;

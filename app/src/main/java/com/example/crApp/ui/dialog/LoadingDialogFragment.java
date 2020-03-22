@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.crApp.R;
 
@@ -17,9 +18,14 @@ import java.util.Objects;
 public class LoadingDialogFragment extends DialogFragment {
     private TextView messageText;
     private static final String MESSAGE_KEY = "message";
+    private DialogVisibilityCallBack callBack;
 
     public LoadingDialogFragment() {
         // default message
+    }
+
+    public void setCallBack(DialogVisibilityCallBack callBack) {
+        this.callBack = callBack;
     }
 
     // To pass message only
@@ -51,5 +57,26 @@ public class LoadingDialogFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         Objects.requireNonNull(getDialog()).setCanceledOnTouchOutside(false);
+    }
+
+    @Override
+    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+        if (callBack != null) {
+            callBack.onShowDialog();
+        }
+        super.show(manager, tag);
+    }
+
+    @Override
+    public void dismiss() {
+        if (callBack != null) {
+            callBack.onDismissDialog();
+        }
+        super.dismiss();
+    }
+
+    public interface DialogVisibilityCallBack {
+        void onShowDialog();
+        void onDismissDialog();
     }
 }

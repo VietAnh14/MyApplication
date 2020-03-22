@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.CallNormalPatient" android:screenOrientation="landscape"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="LockedOrientationActivity" >
+        </activity>
     </application>
 
 </manifest>

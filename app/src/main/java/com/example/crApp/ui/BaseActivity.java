@@ -3,6 +3,7 @@ package com.example.crApp.ui;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,7 +14,7 @@ public class BaseActivity extends AppCompatActivity {
     protected final String TAG = this.getClass().getSimpleName();
     protected LoadingDialogFragment loadingDialogFragment;
 
-    public void handleError(Throwable error) {
+    public void handleError(@NonNull Throwable error) {
         if (error instanceof ANError) {
             ANError err = (ANError) error;
             if (err.getErrorCode() != 0) {
