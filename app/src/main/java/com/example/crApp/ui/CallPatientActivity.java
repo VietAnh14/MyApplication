@@ -1,5 +1,6 @@
 package com.example.crApp.ui;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,6 +11,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import com.dolphinsolutionsvn.dualiutils.DualCardUtils;
 import com.dolphinsolutionsvn.dualiutils.Interface.CardInteractionInterface;
+import com.example.crApp.MainActivity;
 import com.example.crApp.R;
 import com.example.crApp.data.ApiHelper;
 import com.example.crApp.data.CallPatientRequest;
@@ -25,16 +28,17 @@ import com.example.crApp.data.PatientAndQueue;
 import com.example.crApp.data.PrefHelper;
 import com.example.crApp.data.VerifyPatientRequest;
 import com.example.crApp.ui.dialog.LoadingDialogFragment;
-import com.example.crApp.utils.Utils;
+import com.example.crApp.utils.EMVCard;
+import com.example.crApp.utils.MyUtils;
 
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,7 +47,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class CallPatientActivity extends BaseActivity implements CardInteractionInterface, LoadingDialogFragment.DialogVisibilityCallBack {
+public class CallPatientActivity
+        extends BaseActivity implements CardInteractionInterface,
+        LoadingDialogFragment.DialogVisibilityCallBack {
     private RecyclerView patientRecyclerView;
     private Button btnLogout;
     private Button buttonNextPatient;
@@ -102,23 +108,19 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
 
     public void setUpRecyclerView() {
         showLoading(null);
-        patientRecyclerView = findViewById(R.id.patientRecyclerView);
-        patientRecyclerView.setHasFixedSize(true);
-        patientRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        PatientAdapter patientAdapter = new PatientAdapter();
-        patientRecyclerView.setAdapter(patientAdapter);
         compositeDisposable.add(
                 ApiHelper.getListPatientByTable(tableNumber)
                         .subscribeOn(Schedulers.io())
                         .map(result -> {
                             // Check type
                             Log.d(TAG, "setUpRecyclerView: thread " + Thread.currentThread().getName());
-                            LinkedList<PatientAndQueue> listPatient = new LinkedList<>();
+                            ArrayList<PatientAndQueue> listPatient = new ArrayList<>();
                             for (PatientAndQueue patientAndQueue : result.getResult()) {
                                 if (patientAndQueue.getQueue().getType() == type) {
                                     listPatient.add(patientAndQueue);
                                 }
                             }
+                            sortListPatientQueue(listPatient);
                             return listPatient;
                         })
                         .observeOn(AndroidSchedulers.mainThread())
@@ -126,6 +128,7 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
                                 result -> {
                                     Log.d(TAG, "setUpRecyclerView: thread " + Thread.currentThread().getName());
                                     if (!result.isEmpty()) {
+                                        PatientAdapter patientAdapter = (PatientAdapter) patientRecyclerView.getAdapter();
                                         patientAdapter.setPatients(result);
                                         setupCurrentPatientCall(result.get(result.size() - 1));
                                         // save some memory
@@ -184,11 +187,20 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
         buttonNextPatient = findViewById(R.id.btnNextPatient);
         btnLogout = findViewById(R.id.btnLogOut);
 
+        patientRecyclerView = findViewById(R.id.patientRecyclerView);
+        patientRecyclerView.setHasFixedSize(true);
+        patientRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        PatientAdapter patientAdapter = new PatientAdapter();
+        patientRecyclerView.setAdapter(patientAdapter);
         setupColor();
         setupTableNumber();
+
+        dualCardUtils = new DualCardUtils();
+        dualCardUtils.initialize(this);
+        loadingDialogFragment.setCallBack(this);
+
         setUpRecyclerView();
 //        setUpConfirmBtn();
-        editTextPatientCode.requestFocus();
         btnLogout.setOnClickListener(v -> finish());
         buttonNextPatient.setOnClickListener(v -> callNextPatient());
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -199,7 +211,7 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
         VerifyPatientRequest request = new VerifyPatientRequest();
         request.setDepartmentCode("THUOCBHYT");
         request.setPatientCode(patientCode);
-        request.setRequestedDate(Utils.getDate());
+        request.setRequestedDate(MyUtils.getDate());
         compositeDisposable.add(
                 ApiHelper.verifyPatient(request)
                         .subscribeOn(Schedulers.io())
@@ -221,17 +233,23 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
     }
 
     private void getPatientCodeAndVerify(String tekmediCardNumber) {
+        dualCardUtils.stopCardDetect();
         showLoading("Đang xác nhận ");
         compositeDisposable.add(
                 ApiHelper.getPatientCodeByTekmediNumber(tekmediCardNumber)
                         .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSuccess(patient -> {
+                            //Update UI
+                        })
+                        .observeOn(Schedulers.io())
                         .flatMap(patient -> {
                             Log.d(TAG, "getPatientCodeAndVerify: verify: " + Thread.currentThread().getName());
                             Log.d(TAG, "getPatientCodeAndVerify: code: " + patient.getResult().getCode());
                             VerifyPatientRequest request = new VerifyPatientRequest();
                             request.setDepartmentCode("THUOCBHYT");
                             request.setPatientCode(patient.getResult().getCode());
-                            request.setRequestedDate(Utils.getDate());
+                            request.setRequestedDate(MyUtils.getDate());
                             return ApiHelper.verifyPatient(request);
                         }).observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -239,11 +257,13 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
                                     PatientAdapter patientAdapter = (PatientAdapter) patientRecyclerView.getAdapter();
                                     patientAdapter.removePatient(result.getResult().getPatientCode());
                                     loadingDialogFragment.dismiss();
+                                    dualCardUtils.startCardDetect(CallPatientActivity.this);
                                     compositeDisposable.clear();
                                 }, throwable -> {
                                     handleError(throwable);
                                     loadingDialogFragment.dismiss();
                                     compositeDisposable.clear();
+                                    dualCardUtils.startCardDetect(CallPatientActivity.this);
                                 }
                         )
         );
@@ -255,7 +275,7 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
         request.setDepartmentCode("THUOCBHYT");
         request.setLimit("1");
         request.setType(String.valueOf(type));
-        request.setRequestDate(Utils.getDate());
+        request.setRequestDate(MyUtils.getDate());
         compositeDisposable.add(
                 ApiHelper.callPatient(request)
                         .subscribeOn(Schedulers.io())
@@ -276,6 +296,7 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
                                     compositeDisposable.clear();
                                 }, thr -> {
                                     handleError(thr);
+                                    compositeDisposable.clear();
                                     loadingDialogFragment.dismiss();
                                 }
                         )
@@ -307,12 +328,45 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
     protected void onDestroy() {
         unregisterReceiver(mUsbReceiver);
         compositeDisposable.dispose();
+        dualCardUtils.stopCardDetect();
+        dualCardUtils.dispose();
         super.onDestroy();
     }
+
+    EMVCard mainEmvCard;
 
     @Override
     public void onCardRecognized() {
         if (!loadingDialogFragment.isVisible()) {
+            dualCardUtils.stopCardDetect();
+            String bankSequence = getBankSequence();
+            if (!bankSequence.isEmpty()) {
+                EMVCard emvCard = EMVCard.parse(bankSequence);
+                if (emvCard != null) {
+                    String emvSequence = emvCard.toString();
+                    mainEmvCard = emvCard;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            showLoading(null);
+                        }
+                    });
+                    // mainViewModel.get(emvSequence, this);
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            errorDialog.setError("Đã xảy ra lỗi khi đọc thẻ, Vui lòng thử lại hoặc liên hệ nhân viên hỗ trợ!");
+//                            errorDialog.show();
+                            Log.d(TAG, "run: something when wrong");
+                            Toast.makeText(CallPatientActivity.this, "something when wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+                return;
+            }
+
             String tekmediNumber = getTekmediNumber();
             if (tekmediNumber == null || tekmediNumber.isEmpty()) {
                 runOnUiThread(new Runnable() {
@@ -321,6 +375,7 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
 //                        errorDialog.setError("Không nhận được thông tin thẻ, vui lòng thử lại!");
 //                        errorDialog.show();
                         Toast.makeText(CallPatientActivity.this, "Không nhận được thông tin thẻ, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                        dualCardUtils.startCardDetect(CallPatientActivity.this);
                     }
                 });
                 return;
@@ -329,6 +384,8 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(TAG, "run: tekmedi card number: " + cardId);
+                    Toast.makeText(CallPatientActivity.this, cardId, Toast.LENGTH_SHORT).show();
                     getPatientCodeAndVerify(cardId);
                 }
             });
@@ -341,7 +398,7 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
     Timer timer;
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
-        if (isDialogShowing) {
+        if (loadingDialogFragment.isVisible()) {
             if (e.getAction() == KeyEvent.ACTION_DOWN
                     && e.getKeyCode() != KeyEvent.KEYCODE_ENTER) { //Not Adding ENTER_KEY to barcode String
                 char pressedKey = (char) e.getUnicodeChar();
@@ -388,6 +445,10 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
         super.onResume();
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         registerReceiver(mUsbReceiver, filter);
+        if (dualCardUtils.connectDevice()) {
+            Log.d("startCardDetect", "startCardDetectBroad");
+            dualCardUtils.startCardDetect(CallPatientActivity.this);
+        }
     }
 
     public String getTekmediNumber() {
@@ -402,6 +463,33 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
 //        return MOCK_ID;
     }
 
+    //
+    public String getBankSequence() {
+        dualCardUtils.anticol();
+        String response = dualCardUtils.APDU("00A404000E325041592E5359532E444446303100");
+        if (response.isEmpty()) {
+            return "";
+        }
+        response = dualCardUtils.APDU("00A4040007A000000727101000");
+        if (response.isEmpty()) {
+            return "";
+        }
+        response = dualCardUtils.APDU("80A800000F830D0000000000000000000001084000");
+        if (response.isEmpty()) {
+            return "";
+        }
+
+        response = dualCardUtils.APDU("00B2011400");
+        if (response.isEmpty()) {
+            return "";
+        }
+
+        return response.substring(0, response.length() - 4);
+
+//        return "70818C57139704368687654324027D24126018100000000F5A0A9704368687654324043F5F24032412315F25031912015F280207045F3401018E0E0000000000000000020102031F028C159F02069F03069F1A0295055F2A029A039C019F37049F0702AB809F080200019F0D05A4509C80009F0E0500000000009F0F05A4509C80009F420207049F4401009F4A0182";
+//        return "";
+    }
+
     @Override
     public void onShowDialog() {
         dualCardUtils.stopCardDetect();
@@ -412,6 +500,27 @@ public class CallPatientActivity extends BaseActivity implements CardInteraction
     public void onDismissDialog() {
         dualCardUtils.startCardDetect(CallPatientActivity.this);
         isDialogShowing = false;
+    }
+
+    @Override
+    public void handleError(@NonNull Throwable error) {
+        super.handleError(error);
+        dualCardUtils.startCardDetect(this);
+    }
+
+
+    private void sortListPatientQueue(List<PatientAndQueue> patientAndQueueList) {
+        int min = 0;
+        for (int i = 0; i < patientAndQueueList.size() - 1; i++) {
+            PatientAndQueue tempPatient = patientAndQueueList.get(i);
+            for (int j = i; j < patientAndQueueList.size(); j++) {
+                if (patientAndQueueList.get(j).getQueue().getNumber() < tempPatient.getQueue().getNumber()) {
+                    min = j;
+                }
+            }
+            patientAndQueueList.set(i, patientAndQueueList.get(min));
+            patientAndQueueList.set(min, tempPatient);
+        }
     }
 
     // Single will auto dispose when on complete or on error is call, not calling doOnDispose

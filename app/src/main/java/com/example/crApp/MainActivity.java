@@ -1,7 +1,5 @@
 package com.example.crApp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,11 +11,13 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.crApp.data.PatientAndQueue;
 import com.example.crApp.data.PrefHelper;
 import com.example.crApp.ui.BaseActivity;
-import com.example.crApp.ui.CallNormalPatient;
 import com.example.crApp.ui.CallPatientActivity;
-import com.example.crApp.utils.Utils;
+import com.example.crApp.utils.MyUtils;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity{
     private Button btnStart;
@@ -27,7 +27,7 @@ public class MainActivity extends BaseActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onResume: date" + Utils.getDate());
+        Log.d(TAG, "onResume: date" + MyUtils.getDate());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -39,7 +39,7 @@ public class MainActivity extends BaseActivity{
         setupBtnStart();
         setupSpinner();
 
-        String ipAddress = Utils.getIPAddress(true);
+        String ipAddress = MyUtils.getIPAddress(true);
         ipAddress = ipAddress.equals("") ? getString(R.string.connection_error) : ipAddress;
         ((TextView) findViewById(R.id.txtIp)).setText(ipAddress);
     }
@@ -64,7 +64,6 @@ public class MainActivity extends BaseActivity{
 
     private void setupBtnStart() {
         btnStart.setOnClickListener(v -> {
-            v.setEnabled(false);
             prefHelper.saveTableNumber(Integer.parseInt(spinner.getSelectedItem().toString()));
             prefHelper.setIsNormal(!checkBoxPriority.isChecked());
             Log.d(TAG, "save tableNumber: " + spinner.getSelectedItem().toString());
@@ -81,6 +80,5 @@ public class MainActivity extends BaseActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        btnStart.setEnabled(true);
     }
 }

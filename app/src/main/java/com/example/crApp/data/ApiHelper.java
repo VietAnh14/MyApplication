@@ -1,6 +1,6 @@
 package com.example.crApp.data;
 
-import com.example.crApp.utils.Utils;
+import com.example.crApp.utils.MyUtils;
 import com.rx2androidnetworking.Rx2AndroidNetworking;
 
 
@@ -16,7 +16,7 @@ public class ApiHelper {
     public static Single<PatientsGetByTableCodeResponse> getListPatientByTable(int table) {
         return Rx2AndroidNetworking.get(ENDPOINT_GET_PATIENT_BY_TABLE_NUMBER)
                 .addQueryParameter("TableCode", String.valueOf(table))
-                .addQueryParameter("RequestedDate", Utils.getDate())
+                .addQueryParameter("RequestedDate", MyUtils.getDate())
                 .addHeaders("accept", "*/*")
                 .build()
                 .getObjectSingle(PatientsGetByTableCodeResponse.class);

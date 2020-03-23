@@ -1,6 +1,6 @@
 package com.example.crApp.data;
 
-import com.example.crApp.utils.Utils;
+import com.example.crApp.utils.MyUtils;
 import com.google.gson.annotations.SerializedName;
 
 public class CallPatientRequest {
@@ -12,7 +12,7 @@ public class CallPatientRequest {
     private
     String limit = "1";
     @SerializedName("RequestedDate")
-    private String requestDate = Utils.getDate();
+    private String requestDate = MyUtils.getDate();
 
     public CallPatientRequest(String departmentCode, String type, String limit, String requestDate) {
         this.departmentCode = departmentCode;

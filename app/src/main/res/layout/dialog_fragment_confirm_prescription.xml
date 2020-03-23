@@ -7,13 +7,13 @@
         android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="XÁC NHẬN TOA THUỐC"
+        android:text="Message Dialog"
         android:textStyle="bold"
         android:background="@android:color/holo_red_dark"
         android:textColor="@android:color/white"
         android:textSize="20sp"
-        android:paddingStart="30dp"
-        android:paddingEnd="30dp"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:textAlignment="center"
@@ -21,16 +21,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <EditText
-        android:id="@+id/confirmPrescriptionEditText"
+    <TextView
+        android:id="@+id/messageText"
         android:layout_width="0dp"
+        android:text="Some things when wrong"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginTop="30dp"
-        android:background="@drawable/simple_border_editext"
         android:padding="10dp"
-        android:textSize="20sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialogTitle" />
@@ -47,5 +49,5 @@
         android:textColor="@android:color/white"
         android:text="XÁC NHẬN"
         android:background="@android:color/holo_red_dark"
-        app:layout_constraintTop_toBottomOf="@id/confirmPrescriptionEditText"/>
+        app:layout_constraintTop_toBottomOf="@id/messageText"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

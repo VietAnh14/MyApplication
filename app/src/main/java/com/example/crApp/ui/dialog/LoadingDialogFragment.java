@@ -28,6 +28,10 @@ public class LoadingDialogFragment extends DialogFragment {
         this.callBack = callBack;
     }
 
+//    public void setMessage(String message) {
+//        messageText.setText(message);
+//    }
+
     // To pass message only
     public static LoadingDialogFragment getInstance(@NonNull String message) {
         LoadingDialogFragment loadingDialogFragment = new LoadingDialogFragment();

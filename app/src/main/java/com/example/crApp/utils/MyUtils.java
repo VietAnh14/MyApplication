@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class Utils {
+public class MyUtils {
     /**
      * Get IP address from first non-localhost interface
      *
@@ -45,9 +45,9 @@ public class Utils {
         return "";
     }
 
-    // Return current time in format "YYYY-MM-dd"
+    // Return current time in format "yyyy-MM-dd"
     public static String getDate() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd", Locale.US);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         return simpleDateFormat.format(new Date());
     }
 }
