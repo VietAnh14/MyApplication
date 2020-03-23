@@ -13,9 +13,10 @@ public class ApiHelper {
     private static final String ENDPOINT_VERIFY_PATIENT = HOST + "/api/GenerateNumber/temp/verify";
     private static final String ENDPOINT_GET_PATIENT_CODE_BY_TEKMEDI_CARD_NUMBER = HOST + "/api/Patient/number/{cardNumber}";
 
-    public static Single<PatientsGetByTableCodeResponse> getListPatientByTable(int table) {
+    public static Single<PatientsGetByTableCodeResponse> getListPatientByTable(int table, int priority) {
         return Rx2AndroidNetworking.get(ENDPOINT_GET_PATIENT_BY_TABLE_NUMBER)
                 .addQueryParameter("TableCode", String.valueOf(table))
+                .addQueryParameter("Type", String.valueOf(priority))
                 .addQueryParameter("RequestedDate", MyUtils.getDate())
                 .addHeaders("accept", "*/*")
                 .build()

@@ -51,6 +51,7 @@ public class ConfirmPrescriptionDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         btnConfirm = view.findViewById(R.id.btnConfirm);
         TextView dialogTitle = view.findViewById(R.id.dialogTitle);
+        messageText = view.findViewById(R.id.messageText);
         boolean isNormal = PrefHelper.getInstance(getContext()).getIsNormal();
         if (isNormal) {
             btnConfirm.setBackgroundColor(getResources().getColor(R.color.skyBlue));
@@ -58,6 +59,12 @@ public class ConfirmPrescriptionDialogFragment extends DialogFragment {
         }
         if (getArguments() != null) {
             messageText.setText(getArguments().getString(MESSAGE_KEY, "Some things went wrong"));
+        }
+
+        if (listener != null) {
+            btnConfirm.setOnClickListener(v -> {
+                listener.onClick();
+            });
         }
     }
 
@@ -69,8 +76,8 @@ public class ConfirmPrescriptionDialogFragment extends DialogFragment {
         this.dialogVisibilityCallBack = callBack;
     }
 
-    interface OnButtonConfirmClicked {
-        void onClick(String value);
+    public interface OnButtonConfirmClicked {
+        void onClick();
     }
 
     @Override

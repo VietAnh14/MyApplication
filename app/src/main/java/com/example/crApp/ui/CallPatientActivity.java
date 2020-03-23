@@ -1,6 +1,7 @@
 package com.example.crApp.ui;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,33 +12,32 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.error.ANError;
 import com.dolphinsolutionsvn.dualiutils.DualCardUtils;
 import com.dolphinsolutionsvn.dualiutils.Interface.CardInteractionInterface;
-import com.example.crApp.MainActivity;
 import com.example.crApp.R;
+import com.example.crApp.data.ApiError;
 import com.example.crApp.data.ApiHelper;
 import com.example.crApp.data.CallPatientRequest;
 import com.example.crApp.data.PatientAndQueue;
 import com.example.crApp.data.PrefHelper;
 import com.example.crApp.data.VerifyPatientRequest;
-import com.example.crApp.ui.dialog.LoadingDialogFragment;
+import com.example.crApp.ui.dialog.ConfirmPrescriptionDialogFragment;
 import com.example.crApp.utils.EMVCard;
 import com.example.crApp.utils.MyUtils;
+import com.google.gson.Gson;
 
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
@@ -48,8 +48,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class CallPatientActivity
-        extends BaseActivity implements CardInteractionInterface,
-        LoadingDialogFragment.DialogVisibilityCallBack {
+        extends BaseActivity implements CardInteractionInterface, ConfirmPrescriptionDialogFragment.OnButtonConfirmClicked {
     private RecyclerView patientRecyclerView;
     private Button btnLogout;
     private Button buttonNextPatient;
@@ -83,8 +82,6 @@ public class CallPatientActivity
 
     private DualCardUtils dualCardUtils;
     private String cardId;
-    private boolean isDialogShowing = false;
-
     BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -100,28 +97,18 @@ public class CallPatientActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call_patient);
         setupView();
-
-        dualCardUtils = new DualCardUtils();
-        dualCardUtils.initialize(this);
-        loadingDialogFragment.setCallBack(this);
     }
 
     public void setUpRecyclerView() {
         showLoading(null);
         compositeDisposable.add(
-                ApiHelper.getListPatientByTable(tableNumber)
+                ApiHelper.getListPatientByTable(tableNumber, type)
                         .subscribeOn(Schedulers.io())
                         .map(result -> {
                             // Check type
                             Log.d(TAG, "setUpRecyclerView: thread " + Thread.currentThread().getName());
-                            ArrayList<PatientAndQueue> listPatient = new ArrayList<>();
-                            for (PatientAndQueue patientAndQueue : result.getResult()) {
-                                if (patientAndQueue.getQueue().getType() == type) {
-                                    listPatient.add(patientAndQueue);
-                                }
-                            }
-                            sortListPatientQueue(listPatient);
-                            return listPatient;
+                            sortListPatientQueue(result.getResult());
+                            return result.getResult();
                         })
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -157,17 +144,6 @@ public class CallPatientActivity
         tableNumberTv.setText(String.valueOf(tableNumber));
     }
 
-//    public void setUpConfirmBtn() {
-//        Button btnConfirm = findViewById(R.id.btnConfirm);
-////        btnConfirm.setOnClickListener(v -> {
-////            ConfirmPrescriptionDialogFragment confirmDialog = new ConfirmPrescriptionDialogFragment();
-////            confirmDialog.show(getSupportFragmentManager(), null);
-//////            confirmDialog.setOnConfirmClickListener(value -> );
-////        });
-//        btnConfirm.setOnClickListener(v -> {
-//            verifyPatient();
-//        });
-//    }
 
     public void setupColor() {
         boolean isNormal = PrefHelper.getInstance(this).getIsNormal();
@@ -179,6 +155,10 @@ public class CallPatientActivity
     }
 
     public void setupView() {
+
+        dualCardUtils = new DualCardUtils();
+        dualCardUtils.initialize(this);
+
         txtCurrentPatientCode = findViewById(R.id.patientCode);
         txtCurrentPatientDes = findViewById(R.id.txtPatientDes);
         txtCurrentPatientName = findViewById(R.id.txtPatientName);
@@ -195,12 +175,8 @@ public class CallPatientActivity
         setupColor();
         setupTableNumber();
 
-        dualCardUtils = new DualCardUtils();
-        dualCardUtils.initialize(this);
-        loadingDialogFragment.setCallBack(this);
 
         setUpRecyclerView();
-//        setUpConfirmBtn();
         btnLogout.setOnClickListener(v -> finish());
         buttonNextPatient.setOnClickListener(v -> callNextPatient());
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -233,7 +209,6 @@ public class CallPatientActivity
     }
 
     private void getPatientCodeAndVerify(String tekmediCardNumber) {
-        dualCardUtils.stopCardDetect();
         showLoading("Đang xác nhận ");
         compositeDisposable.add(
                 ApiHelper.getPatientCodeByTekmediNumber(tekmediCardNumber)
@@ -254,16 +229,10 @@ public class CallPatientActivity
                         }).observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    PatientAdapter patientAdapter = (PatientAdapter) patientRecyclerView.getAdapter();
-                                    patientAdapter.removePatient(result.getResult().getPatientCode());
-                                    loadingDialogFragment.dismiss();
-                                    dualCardUtils.startCardDetect(CallPatientActivity.this);
-                                    compositeDisposable.clear();
+                                    Toast.makeText(CallPatientActivity.this, "Xác nhận thành công", Toast.LENGTH_SHORT).show();
+                                    setUpRecyclerView();
                                 }, throwable -> {
                                     handleError(throwable);
-                                    loadingDialogFragment.dismiss();
-                                    compositeDisposable.clear();
-                                    dualCardUtils.startCardDetect(CallPatientActivity.this);
                                 }
                         )
         );
@@ -276,28 +245,54 @@ public class CallPatientActivity
         request.setLimit("1");
         request.setType(String.valueOf(type));
         request.setRequestDate(MyUtils.getDate());
+        request.setTableCode(tableNumber);
         compositeDisposable.add(
                 ApiHelper.callPatient(request)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
+                        .doOnSuccess(
                                 result -> {
                                     Log.d(TAG, "callNextPatient: response code: " + result.getCode());
                                     if (result.getResult().isEmpty()) {
                                         Log.d(TAG, "callNextPatient: no more patient, go home bros");
-                                        Toast.makeText(this, "Hiện chưa có bệnh nhân", Toast.LENGTH_SHORT).show();
+                                        showMessageDialog("Hiện chưa có bệnh nhân", this);
                                     } else {
-                                        PatientAdapter patientAdapter = (PatientAdapter) patientRecyclerView.getAdapter();
-                                        patientAdapter.addPatient(result.getResult().get(0));
                                         setupCurrentPatientCall(result.getResult().get(0));
-                                        Toast.makeText(this, "Xác nhận thành công", Toast.LENGTH_SHORT).show();
                                     }
+                                }
+                        ).observeOn(Schedulers.io())
+                        .flatMap(result -> ApiHelper.getListPatientByTable(tableNumber, type))
+                        .map(result -> {
+                            // Check type
+                            Log.d(TAG, "setUpRecyclerView: thread " + Thread.currentThread().getName());
+//                            ArrayList<PatientAndQueue> listPatient = new ArrayList<>();
+//                            for (PatientAndQueue patientAndQueue : result.getResult()) {
+//                                if (patientAndQueue.getQueue().getType() == type) {
+//                                    listPatient.add(patientAndQueue);
+//                                }
+//                            }
+                            sortListPatientQueue(result.getResult());
+                            return result.getResult();
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    loadingDialogFragment.dismiss();
+                                    Log.d(TAG, "setUpRecyclerView: thread " + Thread.currentThread().getName());
+                                    if (!result.isEmpty()) {
+                                        PatientAdapter patientAdapter = (PatientAdapter) patientRecyclerView.getAdapter();
+                                        patientAdapter.setPatients(result);
+                                        setupCurrentPatientCall(result.get(result.size() - 1));
+                                    } else {
+                                        // no more patients
+                                        showMessageDialog("Hiện chưa có bệnh nhân", this);
+                                    }
+                                    compositeDisposable.clear();
+                                },
+                                err -> {
+                                    handleError(err);
                                     loadingDialogFragment.dismiss();
                                     compositeDisposable.clear();
-                                }, thr -> {
-                                    handleError(thr);
-                                    compositeDisposable.clear();
-                                    loadingDialogFragment.dismiss();
                                 }
                         )
         );
@@ -375,7 +370,7 @@ public class CallPatientActivity
 //                        errorDialog.setError("Không nhận được thông tin thẻ, vui lòng thử lại!");
 //                        errorDialog.show();
                         Toast.makeText(CallPatientActivity.this, "Không nhận được thông tin thẻ, vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-                        dualCardUtils.startCardDetect(CallPatientActivity.this);
+                        showMessageDialog("Không nhận được thông tin thẻ, vui lòng thử lại!", CallPatientActivity.this);
                     }
                 });
                 return;
@@ -396,6 +391,7 @@ public class CallPatientActivity
     // Too tired to understand this
     String barcode = "";
     Timer timer;
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (loadingDialogFragment.isVisible()) {
@@ -490,30 +486,54 @@ public class CallPatientActivity
 //        return "";
     }
 
-    @Override
-    public void onShowDialog() {
-        dualCardUtils.stopCardDetect();
-        isDialogShowing = true;
-    }
-
-    @Override
-    public void onDismissDialog() {
-        dualCardUtils.startCardDetect(CallPatientActivity.this);
-        isDialogShowing = false;
-    }
-
-    @Override
     public void handleError(@NonNull Throwable error) {
-        super.handleError(error);
+        if (error instanceof ANError) {
+            ANError err = (ANError) error;
+            if (err.getErrorCode() != 0) {
+                // received error from server
+                // error.getErrorCode() - the error code from server
+                // error.getErrorBody() - the error body from server
+                // error.getErrorDetail() - just an error detail
+                Log.d(TAG, "onError errorCode : " + err.getErrorCode());
+                Log.d(TAG, "onError errorBody : " + err.getErrorBody());
+                Log.d(TAG, "onError errorDetail : " + err.getErrorDetail());
+                ApiError apiError = new Gson().fromJson(err.getErrorBody(), ApiError.class);
+//                Toast.makeText(this, apiError.getMessage(), Toast.LENGTH_SHORT).show();
+                showMessageDialog(apiError.getMessage(), this);
+            } else {
+                // error.getErrorDetail() : connectionError, parseError, requestCancelledError
+                Log.e(TAG, "onError errorDetail : " + err.getErrorDetail(), err);
+                showMessageDialog("Some things went wrong", this);
+            }
+        } else {
+            Log.e(TAG, "handleError: " + error.getMessage(), error);
+            Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showLoading(@Nullable String message) {
+        super.showLoading(message);
+        dualCardUtils.stopCardDetect();
+    }
+
+    @Override
+    public void showMessageDialog(@Nullable String message, @Nullable ConfirmPrescriptionDialogFragment.OnButtonConfirmClicked callBack) {
+        super.showMessageDialog(message, callBack);
+        dualCardUtils.stopCardDetect();
+    }
+
+    @Override
+    public void dismissLoadingDialog() {
+        super.dismissLoadingDialog();
         dualCardUtils.startCardDetect(this);
     }
 
-
     private void sortListPatientQueue(List<PatientAndQueue> patientAndQueueList) {
-        int min = 0;
         for (int i = 0; i < patientAndQueueList.size() - 1; i++) {
+            int min = i;
             PatientAndQueue tempPatient = patientAndQueueList.get(i);
-            for (int j = i; j < patientAndQueueList.size(); j++) {
+            for (int j = i + 1; j < patientAndQueueList.size(); j++) {
                 if (patientAndQueueList.get(j).getQueue().getNumber() < tempPatient.getQueue().getNumber()) {
                     min = j;
                 }
@@ -521,6 +541,13 @@ public class CallPatientActivity
             patientAndQueueList.set(i, patientAndQueueList.get(min));
             patientAndQueueList.set(min, tempPatient);
         }
+    }
+
+    @Override
+    public void onClick() {
+        // Do some things
+        messageDialog.dismiss();
+        dualCardUtils.startCardDetect(this);
     }
 
     // Single will auto dispose when on complete or on error is call, not calling doOnDispose

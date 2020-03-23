@@ -14,14 +14,26 @@ public class CallPatientRequest {
     @SerializedName("RequestedDate")
     private String requestDate = MyUtils.getDate();
 
-    public CallPatientRequest(String departmentCode, String type, String limit, String requestDate) {
+    @SerializedName("TableCode")
+    private int tableCode;
+
+    public CallPatientRequest(String departmentCode, String type, String limit, String requestDate, int tableCode) {
         this.departmentCode = departmentCode;
         this.type = type;
         this.limit = limit;
         this.requestDate = requestDate;
+        this.tableCode = tableCode;
     }
 
     public CallPatientRequest() {
+    }
+
+    public int getTableCode() {
+        return tableCode;
+    }
+
+    public void setTableCode(int tableCode) {
+        this.tableCode = tableCode;
     }
 
     public String getDepartmentCode() {
