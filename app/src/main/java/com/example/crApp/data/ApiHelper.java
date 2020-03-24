@@ -12,7 +12,7 @@ public class ApiHelper {
     private static final String ENDPOINT_CALL_PATIENT = HOST + "/api/GenerateNumber/temp/call";
     private static final String ENDPOINT_VERIFY_PATIENT = HOST + "/api/GenerateNumber/temp/verify";
     private static final String ENDPOINT_GET_PATIENT_CODE_BY_TEKMEDI_CARD_NUMBER = HOST + "/api/Patient/number/{cardNumber}";
-
+    private static final String ENDPOINT_ADD_PATIENT = HOST + "/api/GenerateNumber/temp/add";
     public static Single<PatientsGetByTableCodeResponse> getListPatientByTable(int table, int priority) {
         return Rx2AndroidNetworking.get(ENDPOINT_GET_PATIENT_BY_TABLE_NUMBER)
                 .addQueryParameter("TableCode", String.valueOf(table))
@@ -45,5 +45,13 @@ public class ApiHelper {
                 .addHeaders("accept", "*/*")
                 .build()
                 .getObjectSingle(PatientGetByTekmediNumberResponse.class);
+    }
+
+    public static Single<AddPatientResponse> addPatient(AddPatientRequest request) {
+        return Rx2AndroidNetworking.post(ENDPOINT_ADD_PATIENT)
+                .addApplicationJsonBody(request)
+                .setContentType("application/json-patch+json")
+                .build()
+                .getObjectSingle(AddPatientResponse.class);
     }
 }

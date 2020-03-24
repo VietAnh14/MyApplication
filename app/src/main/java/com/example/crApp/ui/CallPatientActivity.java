@@ -22,6 +22,8 @@ import com.androidnetworking.error.ANError;
 import com.dolphinsolutionsvn.dualiutils.DualCardUtils;
 import com.dolphinsolutionsvn.dualiutils.Interface.CardInteractionInterface;
 import com.example.crApp.R;
+import com.example.crApp.data.AddPatientRequest;
+import com.example.crApp.data.AddPatientResponse;
 import com.example.crApp.data.ApiError;
 import com.example.crApp.data.ApiHelper;
 import com.example.crApp.data.CallPatientRequest;
@@ -46,6 +48,7 @@ import java.util.TimerTask;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.internal.Util;
 
 public class CallPatientActivity
         extends BaseActivity implements CardInteractionInterface, ConfirmPrescriptionDialogFragment.OnButtonConfirmClicked {
@@ -82,6 +85,8 @@ public class CallPatientActivity
 
     private DualCardUtils dualCardUtils;
     private String cardId;
+
+    private String patientCode;
     BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -127,7 +132,7 @@ public class CallPatientActivity
                                     loadingDialogFragment.dismiss();
                                 },
                                 err -> {
-                                    handleError(err);
+                                    handleError(err, true);
                                     loadingDialogFragment.dismiss();
                                     compositeDisposable.clear();
                                 }
@@ -194,13 +199,13 @@ public class CallPatientActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    PatientAdapter patientAdapter = (PatientAdapter) patientRecyclerView.getAdapter();
-                                    patientAdapter.removePatient(result.getResult().getPatientCode());
+                                    setUpRecyclerView();
+                                    Toast.makeText(this, "Xác nhận thành công", Toast.LENGTH_SHORT).show();
                                     loadingDialogFragment.dismiss();
                                     compositeDisposable.clear();
                                 },
                                 thr -> {
-                                    handleError(thr);
+                                    handleError(thr, true);
                                     loadingDialogFragment.dismiss();
                                     compositeDisposable.clear();
                                 }
@@ -219,20 +224,28 @@ public class CallPatientActivity
                         })
                         .observeOn(Schedulers.io())
                         .flatMap(patient -> {
-                            Log.d(TAG, "getPatientCodeAndVerify: verify: " + Thread.currentThread().getName());
-                            Log.d(TAG, "getPatientCodeAndVerify: code: " + patient.getResult().getCode());
-                            VerifyPatientRequest request = new VerifyPatientRequest();
+                            AddPatientRequest request = new AddPatientRequest();
                             request.setDepartmentCode("THUOCBHYT");
-                            request.setPatientCode(patient.getResult().getCode());
-                            request.setRequestedDate(MyUtils.getDate());
-                            return ApiHelper.verifyPatient(request);
-                        }).observeOn(AndroidSchedulers.mainThread())
+                            patientCode = patient.getResult().getCode();
+                            request.setPatientCode(patientCode);
+                            String table = String.valueOf(tableNumber);
+                            request.setTableCode(table);
+                            request.setRequestDate(MyUtils.getDate());
+                            return ApiHelper.addPatient(request);
+                        })
+                        .doOnError(
+                                err -> {
+                                    Log.e(TAG, "getPatientCodeAndVerify: ", err);
+                                    verifyPatient(patientCode);
+                                }
+                        )
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    Toast.makeText(CallPatientActivity.this, "Xác nhận thành công", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(CallPatientActivity.this, "Thêm mới thành công", Toast.LENGTH_SHORT).show();
                                     setUpRecyclerView();
                                 }, throwable -> {
-                                    handleError(throwable);
+                                    handleError(throwable, false);
                                 }
                         )
         );
@@ -290,7 +303,7 @@ public class CallPatientActivity
                                     compositeDisposable.clear();
                                 },
                                 err -> {
-                                    handleError(err);
+                                    handleError(err, true);
                                     loadingDialogFragment.dismiss();
                                     compositeDisposable.clear();
                                 }
@@ -486,7 +499,7 @@ public class CallPatientActivity
 //        return "";
     }
 
-    public void handleError(@NonNull Throwable error) {
+    public void handleError(@NonNull Throwable error, boolean showDialog) {
         if (error instanceof ANError) {
             ANError err = (ANError) error;
             if (err.getErrorCode() != 0) {
@@ -499,11 +512,15 @@ public class CallPatientActivity
                 Log.d(TAG, "onError errorDetail : " + err.getErrorDetail());
                 ApiError apiError = new Gson().fromJson(err.getErrorBody(), ApiError.class);
 //                Toast.makeText(this, apiError.getMessage(), Toast.LENGTH_SHORT).show();
-                showMessageDialog(apiError.getMessage(), this);
+                if (showDialog) {
+                    showMessageDialog(apiError.getMessage(), this);
+                }
             } else {
                 // error.getErrorDetail() : connectionError, parseError, requestCancelledError
                 Log.e(TAG, "onError errorDetail : " + err.getErrorDetail(), err);
-                showMessageDialog("Some things went wrong", this);
+                if (showDialog) {
+                    showMessageDialog("Some things went wrong", this);
+                }
             }
         } else {
             Log.e(TAG, "handleError: " + error.getMessage(), error);
